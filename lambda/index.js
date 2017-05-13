@@ -4,11 +4,10 @@ var eventEmitter = new events.EventEmitter();
 var encoded_gb_key = new Buffer(process.env.GB_KEY).toString('base64')
 
 exports.handler = (event, context, callback) => {
-    eventEmitter.on('define_data', defineData);
 
     eventEmitter.on('data_defined', () => {
-        geckoboardFormattedData = transformData(event.form_response)
-        sendData(geckoboardFormattedData);
+        data = transformData(event.form_response)
+        postToGeckoboardAPI(data, "/datasets/meat.form/data", "data_sent")
     });
 
     eventEmitter.on('data_sent', () => {
@@ -23,11 +22,12 @@ exports.handler = (event, context, callback) => {
     context.succeed(response);
     })
 
-    eventEmitter.emit('define_data');
+    definition = defineData()
+    postToGeckoboardAPI(definition, "/datasets/meat.form", "data_defined")
 };
 
 var defineData = () => {
-    var dataDefinition = JSON.stringify({
+    return {
         "fields": {
             "meat_favourite" : {
                 "type": "string",
@@ -47,34 +47,7 @@ var defineData = () => {
         }
         },
         "unique_by": ["timestamp"]
-    })
-
-    var options = {
-        "method": "POST",
-        "hostname": "api.geckoboard.com",
-        "path": "/datasets/meat.form",
-        "headers": {
-            "authorization": "Basic " + encoded_gb_key,
-            "content-type": "application/json",
-            "content-length": Buffer.byteLength(dataDefinition, 'utf8')
-        }
-    };
-
-    var req = http.request(options, function (res) {
-        var chunks = [];
-
-        res.on("data", function (chunk) {
-            chunks.push(chunk);
-        });
-
-        res.on("end", function () {
-            var body = Buffer.concat(chunks);
-            console.log("defined data")
-            eventEmitter.emit('data_defined')
-        });
-    });
-    req.write(dataDefinition);
-    req.end();
+    }
 }
 
 var transformData = (formResponse) => {
@@ -102,17 +75,16 @@ var transformData = (formResponse) => {
         return { "data": data };
 };
 
-// post data
-var sendData = (data) => {
-    var testData = JSON.stringify(data);
+var postToGeckoboardAPI = function(payload, path, eventName) {
+    payloadString = JSON.stringify(payload)
     var options = {
         "method": "POST",
         "hostname": "api.geckoboard.com",
-        "path": "/datasets/meat.form/data",
+        "path": path,
         "headers": {
             "authorization": "Basic " + encoded_gb_key,
             "content-type": "application/json",
-            "content-length": Buffer.byteLength(testData, 'utf8')
+            "content-length": Buffer.byteLength(payloadString, 'utf8')
         }
     };
 
@@ -125,11 +97,10 @@ var sendData = (data) => {
 
         res.on("end", function () {
             var body = Buffer.concat(chunks);
-            console.log("sent data");
-            eventEmitter.emit('data_sent');
+            console.log(eventName + " completed")
+            eventEmitter.emit(eventName)
         });
     });
-
-    req.write(testData);
+    req.write(payloadString);
     req.end();
-};
+}
