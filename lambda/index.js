@@ -1,9 +1,14 @@
 var http = require("https");
 var events = require('events');
 var eventEmitter = new events.EventEmitter();
-var encoded_gb_key = new Buffer(process.env.GB_KEY).toString('base64')
+var encoded_gb_key = ""
 
-exports.handler = (event, context, callback) => {
+if (process.env.GB_KEY) {
+    encoded_gb_key = new Buffer(process.env.GB_KEY).toString('base64')
+
+}
+
+var handler  = (event, context, callback) => {
 
     eventEmitter.on('data_defined', () => {
         data = transformData(event.form_response)
@@ -22,31 +27,35 @@ exports.handler = (event, context, callback) => {
     context.succeed(response);
     })
 
-    definition = defineData()
+    definition = defineData(event.form_response.definition.fields)
     postToGeckoboardAPI(definition, "/datasets/meat.form", "data_defined")
 };
 
-var defineData = () => {
-    return {
+var defineData = (fields) => {
+    definition = {
         "fields": {
-            "meat_favourite" : {
-                "type": "string",
-        "name": "Favourite meat"
-            },
-        "cooking_preference" : {
-            "type": "string",
-        "name": "How prefer it cooked"
-        },
-        "combo_rating": {
-            "type": "number",
-        "name": "Combo rating"
-        },
-        "timestamp": {
-            "type": "datetime",
-        "name": "Date"
-        }
+            "submitted_at": {
+                "type": "datetime",
+                "name": "Submit date"
+            }
         },
         "unique_by": ["timestamp"]
+    }
+    fields.forEach(function (field) {
+        definition.fields[field.id] = {
+            "type": getFieldDataType(field),
+            "name": field.title
+        }
+    });
+    return definition
+}
+
+var getFieldDataType = (field) => {
+    switch (field.type) {
+        case "rating":
+            return "number";
+        default:
+            return "string";
     }
 }
 
@@ -103,4 +112,9 @@ var postToGeckoboardAPI = function(payload, path, eventName) {
     });
     req.write(payloadString);
     req.end();
+}
+
+module.exports = {
+    handler: handler,
+    _defineData: defineData
 }
