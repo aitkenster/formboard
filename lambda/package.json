@@ -1,0 +1,22 @@
+{
+  "name": "formboard",
+  "version": "1.0.0",
+  "description": "display your Typeform results with Geckoboard",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "chai": "^3.5.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "mocha test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "github.com/aitkenster/formboard"
+  },
+  "author": "Nicola Aitken",
+  "license": "MIT"
+}
