@@ -53,7 +53,14 @@ var defineData = (fields) => {
 var getFieldDataType = (field) => {
     switch (field.type) {
         case "rating":
+        case  "file_upload":
+        case  "number":
+        case  "opinion_scale":
             return "number";
+        case "date":
+            return "date";
+        case "payment":
+            return "money";
         default:
             return "string";
     }

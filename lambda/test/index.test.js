@@ -5,7 +5,7 @@ var assert = require( 'chai' ).assert;
 var myLambda = require( '../index' );
 
 describe('when creating a new dataset from a form description', function() {
-    it('formats number fields correctly', function () {
+    it('formats fields fields correctly', function () {
         var fields = [{
             "id":"iLqM",
             "title":"How would you rate this combo?",
@@ -28,17 +28,15 @@ describe('when creating a new dataset from a form description', function() {
         assert.deepEqual(expectedDefinition, myLambda._defineData(fields));
     })
 
-    it('formats multiple choice fields correctly', function () {
+    it('applies the right data type to all fields', function () {
         var fields = [{
             "id":"iLqM",
             "title":"How do you prefer it cooked?",
-            "type":"multiple_choice"
         }]
 
         var expectedDefinition = {
             "fields": {
                 "iLqM" : {
-                    "type": "string",
                     "name": "How do you prefer it cooked?"
                 },
                 "submitted_at": {
@@ -48,6 +46,27 @@ describe('when creating a new dataset from a form description', function() {
             },
             "unique_by": ["timestamp"]
         }
-        assert.deepEqual(expectedDefinition, myLambda._defineData(fields));
+        var testCases = [
+            {fieldType: "multiple_choice", dataType: "string" },
+            {fieldType: "short_text", dataType: "string" },
+            {fieldType: "long_text", dataType: "string" },
+            {fieldType: "dropdown", dataType: "string" },
+            {fieldType: "date", dataType: "date" },
+            {fieldType: "email", dataType: "string" },
+            {fieldType: "file_upload", dataType: "number" },
+            {fieldType: "legal", dataType: "string" },
+            {fieldType: "number", dataType: "number" },
+            {fieldType: "opinion_scale", dataType: "number" },
+            {fieldType: "payment", dataType: "money" },
+            {fieldType: "picture_choice", dataType: "string" },
+            {fieldType: "rating", dataType: "number" },
+            {fieldType: "website", dataType: "string" },
+            {fieldType: "yes_no", dataType: "string" },
+        ]
+        testCases.forEach(function(testCase) {
+            fields[0].type = testCase.fieldType
+            expectedDefinition.fields.iLqM.type = testCase.dataType
+            assert.deepEqual(expectedDefinition, myLambda._defineData(fields));
+        });
     })
 })
