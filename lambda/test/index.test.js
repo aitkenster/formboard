@@ -5,6 +5,15 @@ var assert = require( 'chai' ).assert;
 var myLambda = require( '../index' );
 
 describe('when creating a new dataset from a form description', function() {
+    it('names the dataset correctly', function () {
+        var formDescription = {
+            "id":"ZTzDWO",
+            "title":"formboard test"
+        }
+
+        assert.deepEqual("formboard.test", myLambda._getDatasetName(formDescription));
+    });
+
     it('formats fields fields correctly', function () {
         var fields = [{
             "id":"iLqM",
@@ -14,7 +23,7 @@ describe('when creating a new dataset from a form description', function() {
 
         var expectedDefinition = {
             "fields": {
-                "iLqM": {
+                "ilqm": {
                     "type": "number",
                     "name": "How would you rate this combo?"
                 },
@@ -23,10 +32,10 @@ describe('when creating a new dataset from a form description', function() {
                     "name": "Submit date"
                 }
             },
-            "unique_by": ["timestamp"]
+            "unique_by": ["submitted_at"]
         }
         assert.deepEqual(expectedDefinition, myLambda._defineData(fields));
-    })
+    });
 
     it('applies the right data type to all fields', function () {
         var fields = [{
@@ -36,7 +45,7 @@ describe('when creating a new dataset from a form description', function() {
 
         var expectedDefinition = {
             "fields": {
-                "iLqM" : {
+                "ilqm" : {
                     "name": "How do you prefer it cooked?"
                 },
                 "submitted_at": {
@@ -44,7 +53,7 @@ describe('when creating a new dataset from a form description', function() {
                     "name": "Submit date"
                 }
             },
-            "unique_by": ["timestamp"]
+            "unique_by": ["submitted_at"]
         }
         var testCases = [
             {fieldType: "multiple_choice", dataType: "string" },
@@ -65,7 +74,7 @@ describe('when creating a new dataset from a form description', function() {
         ]
         testCases.forEach(function(testCase) {
             fields[0].type = testCase.fieldType
-            expectedDefinition.fields.iLqM.type = testCase.dataType
+            expectedDefinition.fields.ilqm.type = testCase.dataType
             assert.deepEqual(expectedDefinition, myLambda._defineData(fields));
         });
     })
