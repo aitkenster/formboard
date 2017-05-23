@@ -77,25 +77,27 @@ var transformData = (formResponse) => {
     console.log(formResponse.submitted_at)
         date = new Date()
         data = [{
-            "timestamp": formResponse.submitted_at
+            "submitted_at": formResponse.submitted_at
         }]
     formResponse.answers.forEach(function(answer) {
-        switch (answer.field.id) {
-            case 'yUz6':
-                data[0].meat_favourite = answer.choice.label;
-                break;
-            case 'L31l':
-                data[0].cooking_preference = answer.choice.label;
-                break;
-            case 'iLqM':
-                data[0].combo_rating = answer.number;
-                break;
-            default:
-                break;
-        }
+        fieldRef = answer.field.id.toLowerCase();
+        data[0][fieldRef] = extractAnswer(answer)
     });
     console.log("transformed data")
-        return { "data": data };
+    return { "data": data };
+};
+
+var extractAnswer = (answerData) => {
+    switch (answerData.type) {
+        case 'choice':
+           return answerData.choice.label
+           break;
+        case 'number':
+           return answerData.number
+        default:
+           break;
+           return 'error'
+    }
 };
 
 var postToGeckoboardAPI = function(payload, path, eventName) {
@@ -142,4 +144,5 @@ module.exports = {
     handler: handler,
     _defineData: defineData,
     _getDatasetName: getDatasetName,
+    _extractAnswer: extractAnswer,
 }

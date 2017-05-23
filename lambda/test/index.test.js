@@ -79,3 +79,27 @@ describe('when creating a new dataset from a form description', function() {
         });
     })
 })
+
+describe('when creating a new dataset submission from form answers', function() {
+    it('applies the right data type to the answers', function () {
+        var testCases = [{
+            answer: {
+                "type":"choice",
+                "choice": {"label":"Barcelona"},
+                "field": {"id":"yUz6", "type":"multiple_choice" }
+            },
+            expected: 'Barcelona',
+        },{
+            answer: {
+                "type":"number",
+                "number":42,
+                "field":{"id":"iLqM","type":"rating"}
+            },
+            expected: 42,
+        }]
+
+        testCases.forEach(function(testCase) {
+            assert.deepEqual(testCase.expected, myLambda._extractAnswer(testCase.answer))
+        });
+    });
+})
