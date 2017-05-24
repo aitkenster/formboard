@@ -12,6 +12,7 @@ var handler  = (event, context, callback) => {
 
     eventEmitter.on('data_defined', () => {
         data = transformData(event.form_response)
+        console.log(JSON.stringify(data))
         postToGeckoboardAPI(data, "/datasets/" + datasetName + "/data", "data_sent")
     });
 
@@ -60,7 +61,6 @@ var getDatasetName = (formDefinition) => {
 var getFieldDataType = (field) => {
     switch (field.type) {
         case "rating":
-        case  "file_upload":
         case  "number":
         case  "opinion_scale":
             return "number";
@@ -89,14 +89,12 @@ var transformData = (formResponse) => {
 
 var extractAnswer = (answerData) => {
     switch (answerData.type) {
+        case 'boolean':
+            return answerData.boolean ? "yes" : "no"
         case 'choice':
            return answerData.choice.label
-           break;
-        case 'number':
-           return answerData.number
         default:
-           break;
-           return 'error'
+           return answerData[answerData.type]
     }
 };
 

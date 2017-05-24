@@ -62,7 +62,7 @@ describe('when creating a new dataset from a form description', function() {
             {fieldType: "dropdown", dataType: "string" },
             {fieldType: "date", dataType: "date" },
             {fieldType: "email", dataType: "string" },
-            {fieldType: "file_upload", dataType: "number" },
+            {fieldType: "file_upload", dataType: "string" },
             {fieldType: "legal", dataType: "string" },
             {fieldType: "number", dataType: "number" },
             {fieldType: "opinion_scale", dataType: "number" },
@@ -96,10 +96,52 @@ describe('when creating a new dataset submission from form answers', function() 
                 "field":{"id":"iLqM","type":"rating"}
             },
             expected: 42,
+        },{
+            answer: {
+                "type": "boolean",
+                "boolean": true,
+                "field": { "id": "w0jx", "type": "yes_no" }
+            },
+            expected: "yes",
+        },{
+            answer: {
+                "type": "email",
+                "email": "an_account@example.com",
+                "field": { "id": "cjzz", "type": "email" }
+            },
+            expected: "an_account@example.com",
+        },{
+            answer: {
+                "type": "date",
+                "date": "2017-02-06",
+                "field": { "id": "Vdtv", "type": "date" }
+            },
+            expected: "2017-02-06",
+        },{
+            answer: {
+                "type": "url",
+                "url": "http:\/\/example-url.com",
+                "field": { "id": "WyDu", "type": "website" }
+            },
+            expected: "http:\/\/example-url.com",
+        },{
+            answer:  {
+                "type": "file_url",
+                "file_url": "https:\/\/admin.typeform.com\/form\/results\/file\/download\/Npipjv\/qVCj\/file.ext",
+                "field": { "id": "qVCj", "type": "file_upload" }
+            },
+            expected: "https:\/\/admin.typeform.com\/form\/results\/file\/download\/Npipjv\/qVCj\/file.ext",
+        },{
+            answer: {
+                "type": "text",
+                "text": "Lorem ipsum dolor",
+                "field": { "id": "qSP9", "type": "short_text" }
+            },
+            expected: "Lorem ipsum dolor",
         }]
 
         testCases.forEach(function(testCase) {
-            assert.deepEqual(testCase.expected, myLambda._extractAnswer(testCase.answer))
+            assert.equal(testCase.expected, myLambda._extractAnswer(testCase.answer))
         });
     });
 })
