@@ -12,12 +12,10 @@ var handler  = (event, context, callback) => {
 
     eventEmitter.on('data_defined', () => {
         data = transformData(event.form_response)
-        console.log(JSON.stringify(data))
         postToGeckoboardAPI(data, "/datasets/" + datasetName + "/data", "data_sent")
     });
 
     eventEmitter.on('data_sent', () => {
-        console.log("success")
         let response = {
             statusCode: '200',
             body: JSON.stringify({ message: 'Successfully sent data to Geckoboard!' }),
@@ -29,9 +27,7 @@ var handler  = (event, context, callback) => {
     })
 
     datasetName = getDatasetName(event.form_response.definition)
-        console.log(datasetName)
     definition = defineData(event.form_response.definition.fields)
-    console.log(JSON.stringify(definition))
     postToGeckoboardAPI(definition, "/datasets/" + datasetName, "data_defined")
 };
 
@@ -74,7 +70,6 @@ var getFieldDataType = (field) => {
 }
 
 var transformData = (formResponse) => {
-    console.log(formResponse.submitted_at)
         date = new Date()
         data = [{
             "submitted_at": formResponse.submitted_at
@@ -83,7 +78,6 @@ var transformData = (formResponse) => {
         fieldRef = answer.field.id.toLowerCase();
         data[0][fieldRef] = extractAnswer(answer)
     });
-    console.log("transformed data")
     return { "data": data };
 };
 
@@ -119,15 +113,14 @@ var postToGeckoboardAPI = function(payload, path, eventName) {
             chunks.push(chunk);
         });
 
-        res.on('error', function(exception) { console.log("[ERROR] from Geckoboard:" + exception); });
-        if(res.statusCode != '200'){
+        if(res.statusCode != '200' || '201'){
             console.log("[ERROR] status code: " + res.statusCode)
         }
 
+        res.on('error', function(exception) { console.log("[ERROR] from Geckoboard:" + exception); });
+
         res.on("end", function () {
             var body = Buffer.concat(chunks);
-            console.log(body.toString());
-            console.log(eventName + " completed")
             eventEmitter.emit(eventName)
         });
     }).on('error', function(e) {
