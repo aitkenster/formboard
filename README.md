@@ -1,28 +1,50 @@
 # Formboard
 
-AWS Lambda function which lets you display data whih you collected via [Typeform](https://www.typeform.com/) in [Geckoboard](https://www.geckoboard.com/) 
+Connect a [typeform](https://www.typeform.com/) to [Geckoboard](https://www.geckoboard.com/) via an AWS Lambda function to build a data dashboard with the responses collected.  
 
-<img src="https://photos-4.dropbox.com/t/2/AAAiYbqRZhup3f28GOqpn-bhk5Wwi8Jx4u_2L6imQONGYg/12/587988673/png/32x32/3/1495810800/0/2/Screenshot%202017-05-26%2012.20.08.png/ELmZh94EGBYgAigC/qhHEa_dc7SFj1sEZIb3X77A5sAS-5kGWhs_CZJebHsg?dl=0&size=800x600&size_mode=4" width="400"> <img src="https://photos-1.dropbox.com/t/2/AABBWPHj75-gXC7sRQGxn3twPfj6ekvG7q7YFrHveby54g/12/587988673/png/32x32/3/1495810800/0/2/Screenshot%202017-05-26%2012.18.19.png/ELmZh94EGBUgAigC/IDT4iIoECStEB93P7yEXODp0ZD4qwiuQpx8nu6yyKr0?dl=0&size=2048x1536&size_mode=" width="400">
+## Demo
 
-## Usage instructions
+See it in action:
 
-### Prequisites
-- AWS account
-- Typeform Pro+ account
-- Geckoboard account
+| The [typeform](https://nicolaa.typeform.com/to/W0syNy)  | The [data dashboard](https://share.geckoboard.com/dashboards/3S7726UMLFW3UQGS) |
+| ------------- | ------------- |
+| [![typeform](https://user-images.githubusercontent.com/26118760/26932579-3029e27a-4c64-11e7-9391-a330d5d03deb.png)](https://nicolaa.typeform.com/to/W0syNy)  | [![data dashboard](https://user-images.githubusercontent.com/26118760/26932578-300f7eb2-4c64-11e7-9fe5-e7f2fa01d26e.png)](https://share.geckoboard.com/dashboards/3S7726UMLFW3UQGS)  |
 
-Set up a Lambda function on AWS. The simplest way to get this running is then to copy the contents of `lambda/index.js` into the lamda SDK. Alternatively, clone the repo and use the AWS CLI to deploy to Lambda with the script `./publish.sh`.
-Set a GB_KEY env variable for the lambda function with a Geckoboard API key.
+## Setup
 
-Set up an API on the AWS API Gateway with a `POST` request, and link this to the lambda function.
+#### Prerequisites
 
-In the webhooks dashboard for your Typeform, paste the URL for the API.
+- [AWS Lambda](https://aws.amazon.com/lambda/) account
+- [Typeform](https://www.typeform.com/) Pro+ account
+- [Geckoboard](https://www.geckoboard.com/) account
 
-The form results should now appear as a Geckoboard dataset, and can be customized to displaying in a dashboard.
+#### Install
 
-### Technologies
+1. Set up a Lambda function on AWS. The simplest way to get it running is to copy the contents of `lambda/index.js` into the lamda SDK. Alternatively, clone the repo and use the AWS CLI to deploy to Lambda with the script `./publish.sh`.
+
+2. Set a GB_KEY env variable for the lambda function with a Geckoboard API key.
+
+3. Set up an API on the AWS API Gateway with a `POST` request, and link it to the lambda function.
+
+4. Paste the URL for the API on your typeform's webhooks dashboard (Configure panel).
+
+5. The typeform results should now appear as a Geckoboard dataset, and can be customized to be displayed on a Geckoboard dashboard.
+
+## Usage
+
+#### Technologies 
+
 - AWS Lambda
 - NodeJS
 
-### Todo
-Support Typeform payment field
+#### Current limitations
+
+- Typeform payment field is not supported
+
+## Credits
+
+Built by [@aitkenster](https://github.com/aitkenster)
+
+#### Contributors
+
+[@evaame](https://github.com/evaame) - documentation
