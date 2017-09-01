@@ -66,7 +66,6 @@ describe('when creating a new dataset from a form description', function() {
             {fieldType: "legal", dataType: "string" },
             {fieldType: "number", dataType: "number" },
             {fieldType: "opinion_scale", dataType: "number" },
-            {fieldType: "payment", dataType: "money" },
             {fieldType: "picture_choice", dataType: "string" },
             {fieldType: "rating", dataType: "number" },
             {fieldType: "website", dataType: "string" },
@@ -77,7 +76,36 @@ describe('when creating a new dataset from a form description', function() {
             expectedDefinition.fields.ilqm.type = testCase.dataType
             assert.deepEqual(expectedDefinition, myLambda._defineData(fields));
         });
-    })
+    });
+
+    it('adds the currency code to the dataset definition of money fields', function () {
+
+        var fields = [{
+            "id": "iLqM",
+            "title": "Please enter your payment details",
+            "type": "payment",
+            "properties": {
+                "currency": "USD"
+            }
+        }]
+
+        var expectedDefinition = {
+            "fields": {
+                "ilqm" : {
+                    "name": "Please enter your payment details",
+                    "type": "money",
+                    "currency_code": "USD",
+                },
+                "submitted_at": {
+                    "type": "datetime",
+                    "name": "Submit date"
+                }
+            },
+            "unique_by": ["submitted_at"]
+        }
+
+        assert.deepEqual(expectedDefinition, myLambda._defineData(fields));
+    });
 })
 
 describe('when creating a new dataset submission from form answers', function() {
@@ -138,6 +166,17 @@ describe('when creating a new dataset submission from form answers', function() 
                 "field": { "id": "qSP9", "type": "short_text" }
             },
             expected: "Lorem ipsum dolor",
+        },{
+            answer: {
+              "type": "payment",
+              "payment": {
+                "amount": "25",
+                "last4": "4242",
+                "name": "William Gates"
+              },
+              "field": { "id": "12345", "type": "payment" }
+            },
+            "expected": 2500,
         }]
 
         testCases.forEach(function(testCase) {

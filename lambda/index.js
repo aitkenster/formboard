@@ -41,10 +41,17 @@ var defineData = (fields) => {
         "unique_by": ["submitted_at"],
     };
     fields.forEach(function (field) {
-        definition.fields[field.id.toLowerCase()] = {
-            "type": getFieldDataType(field),
+        var type = getFieldDataType(field),
+            definitionID = field.id.toLowerCase();
+
+        definition.fields[definitionID] = {
+            "type": type,
             "name": field.title
         };
+
+        if (type === "money") {
+            definition.fields[definitionID].currency_code = field.properties.currency;
+        }
     });
     return definition;
 };
@@ -86,6 +93,8 @@ var extractAnswer = (answerData) => {
             return answerData.boolean ? "yes" : "no";
         case "choice":
             return answerData.choice.label;
+        case "payment":
+            return parseFloat(answerData.payment.amount)*100;
         default:
             return answerData[answerData.type];
     }
